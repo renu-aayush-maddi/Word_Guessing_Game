@@ -12,7 +12,7 @@ namespace Word_Guessing_Game.Repositories
             connection = new DbConnection().Connect();
         }
 
-        public void Register(User user)
+        public bool Register(User user)
         {
             string insertCommand =$"insert into users(username,password) values('{user.Username}','{user.Password}')";
             NpgsqlCommand command = new NpgsqlCommand(insertCommand,connection);
@@ -24,16 +24,22 @@ namespace Word_Guessing_Game.Repositories
                 if (result > 0)
                 {
                     Console.WriteLine("Registration successful");
+                    return true;
                 }
             }
-            catch (Exception ex)
+            catch (PostgresException ex)
             {
+                if(ex.SqlState == "23505") { Console.WriteLine("Username already exists"); }
+                else
+                {
                 Console.WriteLine(ex.Message);
+                }
             }
             finally
             {
                 connection.Close();
             }
+            return false;
         }
 
         public User? Login(string username, string password)

@@ -17,6 +17,10 @@ namespace Word_Guessing_Game
 
             if(choice == "2")
             {
+
+                bool registered = false;
+                while(!registered)
+                {
                 User newUser = new User();
 
                 Console.Write("Username : ");
@@ -25,7 +29,8 @@ namespace Word_Guessing_Game
                 Console.Write("Password : ");
                 newUser.Password = Console.ReadLine() ?? "";
 
-                repository.Register(newUser);
+                registered =repository.Register(newUser);
+            }
             }
 
             User? loggedInUser = null;
