@@ -1,5 +1,6 @@
 using Word_Guessing_Game.Exceptions;
 using Word_Guessing_Game.Services;
+using Word_Guessing_Game.Repositories;
 
 namespace Word_Guessing_Game.Models
 {
@@ -8,14 +9,17 @@ namespace Word_Guessing_Game.Models
         private string hiddenWord;
         private int maxAttempts = 6;
         private List<string> guessedWords = new List<string>();
-        private WordProvider provider = new WordProvider();
+        private WordRepository provider = new WordRepository();
         private FeedbackGenerator feedbackGenerator = new FeedbackGenerator();
         private ConsoleRenderer renderer = new ConsoleRenderer();
         private CommentGenerator commentGenerator = new CommentGenerator();
         private ScoreCalculator scoreCalculator = new ScoreCalculator();
+        private ScoreRepository scoreRepository = new ScoreRepository();
+        private User currentUser;
 
-        public Game()
+        public Game(User user)
         {
+            currentUser = user;
             hiddenWord = provider.GetWord();
         }
 
@@ -53,6 +57,7 @@ namespace Word_Guessing_Game.Models
                         renderer.ShowSuccess("You guessed the word!");
                         Console.WriteLine(commentGenerator.GetComment(attempt));
                         int score =scoreCalculator.CalculateScore(attempt);
+                        scoreRepository.SaveScore(currentUser.Id,score);
                         Console.WriteLine($"Score:{score}");
                         return;
                     }
